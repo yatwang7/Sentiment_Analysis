@@ -10,6 +10,46 @@ nltk.download('omw-1.4')  # optional but improves accuracy
 
 lemmatizer = WordNetLemmatizer()
 
+WH_WORDS = {"what","why","how","when","where","which","who","whom","whose"}
+AUX_START = {"is","are","was","were","do","does","did","can","could","should","would","will","has","have","had"}
+QUESTION_PHRASES = {
+    "anyone know","should i take","who to take","how is","is x good",
+    "is this class hard","thoughts on","recommendations for","worth taking",
+    "has anyone taken","which section","which professor","need advice"
+}
+REVIEW_HINTS = {
+    # signals of past/experience-based reviews
+    "i took","i had","i’ve had","i have had","took him","took her","took with",
+    "he taught","she taught","was taught","graded","curve","lectures","assignments",
+    "homework","midterms","exams","quizzes","labs","projects","helpful","clear",
+    "organized","engaging","caring","fair","hard","easy","attendance","office hours"
+}
+
+def is_question_like(review):
+    """
+    Return True if the post is primarily a question (not a review).
+    Simple scoring heuristic on title + body (title weighted).
+    """
+    r = (review or "").strip().lower()
+
+    # Quick positives for question-ness
+    score = 0
+    if "?" in r: score += 1
+
+    # Starts with WH/Aux pattern?
+    first_word = re.split(r"\W+", r)[0] if r else ""
+    if first_word in WH_WORDS or first_word in AUX_START:
+        score += 2
+
+    # Phrase matches
+    if any(p in r for p in QUESTION_PHRASES): score += 1
+
+    # Penalize if we see strong review hints (experience/past tense/etc.)
+    if any(p in r for p in REVIEW_HINTS): score -= 1
+
+    # Tuneable threshold
+    return score >= 2
+
 def normalize(word):
     """
     Normalize words by lemmatization.
@@ -37,7 +77,7 @@ def analyze_sentiment(review_text):
         "subjectivity": blob.sentiment.subjectivity
     }
 
-def summarize_reviews(review_list, top_n=5):
+def summarize_reviews(review_list, prof_name, top_n=5):
     """
     Summarizes common words/themes in the reviews.
     Returns top N most common meaningful words.
@@ -49,7 +89,7 @@ def summarize_reviews(review_list, top_n=5):
         "she", "he", "we", "you", "about", "very", "have", "has", "had", "my",
         "so", "at", "his", "her", "their", "our", "as", "not", "from", "or"
     }
-    common_review_words = {"professor", "course", "class", "lecture", "assignment", "exam", "student", "students"}
+    common_review_words = {prof_name, "professor", "course", "class", "lecture", "assignment", "exam", "student", "students"}
     exclude_words = stop_words | common_review_words
 
     # Analyze each review and collect meaningful words
@@ -66,13 +106,15 @@ def summarize_reviews(review_list, top_n=5):
     summary = ", ".join([word for word, freq in common_words])
     return summary
 
-def analyze_reviews(review_list):
+def analyze_reviews(review_list, prof_name):
     """
     Analyze sentiment and return results with a summary.
     """
     # Polarity and subjectivity for each review
     results = []
     for review in review_list:
+        if is_question_like(review):
+            continue  # Skip question-like posts
         sentiment = analyze_sentiment(review)
         results.append({
             "review": review,
@@ -80,7 +122,7 @@ def analyze_reviews(review_list):
             "subjectivity": sentiment["subjectivity"]
         })
     # Summary of all reviews
-    summary = summarize_reviews(review_list)
+    summary = summarize_reviews(review_list, prof_name)
     return {
         "sentiments": results,
         "summary": summary

@@ -18,14 +18,13 @@ def analyze():
 
     # Scrape Reddit posts
     print("Scraping Reddit for professor:", prof_name)
-    cleaned_reviews = get_reddit_reviews(prof_name, "Rutgers University", limit_per_subreddit=20)
-    review_texts = cleaned_reviews.get('reviews', [])
+    review_texts = get_reddit_reviews(prof_name, "Rutgers University", limit_per_subreddit=20)
 
     if not review_texts:
         return jsonify({"error": f"No Reddit posts found for {prof_name}"}), 404
 
     # Run sentiment analysis
-    results = analyze_reviews(review_texts)
+    results = analyze_reviews(review_texts, prof_name)
     return jsonify(results)
 
 if __name__ == "__main__":
