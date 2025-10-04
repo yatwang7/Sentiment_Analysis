@@ -2,5 +2,5 @@ flask
 transformers
 torch
 nltk
-dotenv
+python-dotenv
 praw
