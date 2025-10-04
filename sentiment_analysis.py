@@ -97,6 +97,7 @@ def summarize_reviews(review_list, prof_name, top_n=5):
         "there", "out", "up", "more", "no", "one", "would", "been", "some",
         "could", "did", "how", "than", "then", "take", "class", "course",
         "professor", "prof", "dr", "doctor", "also", "anyone", "semester",
+        "took",
         prof_name.lower()
     }
 
