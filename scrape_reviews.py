@@ -2,7 +2,7 @@ import praw
 from dotenv import load_dotenv
 import os
 
-load_dotenv()  # looks for .env in current or parent dirs
+load_dotenv()
 CLIENT_ID   = os.getenv("client_id")
 CLIENT_SECRET = os.getenv("client_secret")
 USER_AGENT = os.getenv("user_agent") 

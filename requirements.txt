@@ -1,5 +1,5 @@
-praw
+flask
 nltk
 textblob
-requests
-beautifulsoup4
+dotenv
+praw
