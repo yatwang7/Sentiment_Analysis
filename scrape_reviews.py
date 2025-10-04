@@ -1,17 +1,17 @@
 import praw
 from dotenv import load_dotenv
-load_dotenv()  # looks for .env in current or parent dirs
-
 import os
+
+load_dotenv()  # looks for .env in current or parent dirs
 CLIENT_ID   = os.getenv("client_id")
 CLIENT_SECRET = os.getenv("client_secret")
 USER_AGENT = os.getenv("user_agent") 
 
 # ----------- Setup Reddit API -----------
 reddit = praw.Reddit(
-    client_id="c_7L21TyZKWf17VUsGmOag",
-    client_secret="MivtP_Pv1ZampBd8x3bzUtzoQpptCQ",
-    user_agent="SentimentAnalysisScrapper"
+    client_id=CLIENT_ID,
+    client_secret=CLIENT_SECRET,
+    user_agent=USER_AGENT
 )
 
 def get_reddit_reviews(name, school, limit_per_subreddit=20):
