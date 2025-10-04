@@ -17,7 +17,7 @@ def get_reddit_reviews(name, school, limit_per_subreddit=20):
     last_name = name.split()[-1]
 
     # Subreddits to search
-    subreddits = ["Rutgers", "college", "Professors"]
+    subreddits = ["Rutgers"]
 
     # Query variations
     queries = [
