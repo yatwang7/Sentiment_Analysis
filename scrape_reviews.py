@@ -1,4 +1,11 @@
 import praw
+from dotenv import load_dotenv
+load_dotenv()  # looks for .env in current or parent dirs
+
+import os
+CLIENT_ID   = os.getenv("client_id")
+CLIENT_SECRET = os.getenv("client_secret")
+USER_AGENT = os.getenv("user_agent") 
 
 # ----------- Setup Reddit API -----------
 reddit = praw.Reddit(
@@ -7,44 +14,36 @@ reddit = praw.Reddit(
     user_agent="SentimentAnalysisScrapper"
 )
 
-# ----------- Function to get Reddit reviews -----------
 def get_reddit_reviews(name, school, limit_per_subreddit=20):
-    """
-    Search specific subreddits for posts and comments mentioning a professor and school.
-    Returns a cleaned list of review texts.
-    """
     reviews = []
     last_name = name.split()[-1]
-
-    # Subreddits to search
     subreddits = ["Rutgers"]
 
-    # Query variations
     queries = [
+        f"{last_name}",
         f"{last_name} {school.split()[0]}",
         f"Professor {last_name}",
-        f"Dr. {last_name}",
-        f"{name} {school.split()[0]}"
+        f"Dr {last_name}"
     ]
 
     try:
         for sub in subreddits:
             subreddit = reddit.subreddit(sub)
             for query in queries:
-                for submission in subreddit.search(query, limit=limit_per_subreddit):
-                    # Collect submission text
+                for submission in subreddit.search(query, limit=limit_per_subreddit, sort='relevance'):
                     text = submission.title
                     if submission.selftext:
                         text += "\n" + submission.selftext
                     reviews.append(text)
 
-                    # Collect all comments
                     submission.comments.replace_more(limit=0)
                     for comment in submission.comments.list():
                         reviews.append(comment.body)
 
-        # Clean duplicates and very short text
-        clean_reviews = list({r.strip() for r in reviews if len(r.strip()) > 10})
+        # Keep only texts that mention the professor
+        filtered_reviews = [r for r in reviews if last_name.lower() in r.lower()]
+        # Remove duplicates and very short texts
+        clean_reviews = list({r.strip() for r in filtered_reviews if len(r.strip()) > 10})
         print(f"[Reddit] Total cleaned reviews: {len(clean_reviews)}")
         return clean_reviews
 
@@ -52,9 +51,11 @@ def get_reddit_reviews(name, school, limit_per_subreddit=20):
         print(f"[Reddit] Error: {e}")
         return []
 
+
+
 # ----------- Main -----------
 if __name__ == "__main__":
-    professor_name = "David Menedez"
+    professor_name = "Tzvika Geft"
     professor_school = "Rutgers University"
 
     reviews = get_reddit_reviews(professor_name, professor_school, limit_per_subreddit=10)
