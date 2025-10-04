@@ -1,4 +1,4 @@
-flask
+praw
 nltk
 textblob
 requests
