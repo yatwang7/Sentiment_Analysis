@@ -11,15 +11,26 @@ nltk.download('omw-1.4')  # optional but improves accuracy
 lemmatizer = WordNetLemmatizer()
 
 def normalize(word):
+    """
+    Normalize words by lemmatization.
+    """
     return lemmatizer.lemmatize(word)
 
 def clean_text(text):
-    # Basic text cleaning for keyword extraction
+    """
+    Cleans the input text by lowering case and removing punctuation.
+    """
     text = text.lower()
-    text = re.sub(r'[^\w\s]', '', text)  # remove punctuation
+    text = re.sub(r'[^\w\s]', '', text) # Remove punctuation
     return text
 
 def analyze_sentiment(review_text):
+    """
+    Analyzes sentiment of the review text using TextBlob.
+    Returns polarity and subjectivity.
+    Polarity is a float within the range [-1.0, 1.0] where -1 indicates negative sentiment and +1 indicates positive sentiment.
+    Subjectivity is a float within the range [0.0, 1.0] where 0.0 is very objective and 1.0 is very subjective.
+    """
     blob = TextBlob(review_text)
     return {
         "polarity": blob.sentiment.polarity,
@@ -31,7 +42,7 @@ def summarize_reviews(review_list, top_n=5):
     Summarizes common words/themes in the reviews.
     Returns top N most common meaningful words.
     """
-    all_words = []
+    # Identify and exclude common stop words and review-specific terms
     stop_words = {
         "a", "an", "the", "is", "are", "was", "were", "be", "to", "of", "and",
         "in", "for", "with", "on", "this", "that", "i", "it", "but", "they",
@@ -41,12 +52,15 @@ def summarize_reviews(review_list, top_n=5):
     common_review_words = {"professor", "course", "class", "lecture", "assignment", "exam", "student", "students"}
     exclude_words = stop_words | common_review_words
 
+    # Analyze each review and collect meaningful words
+    all_words = []
     for review in review_list:
         cleaned = clean_text(review)
         cleaned_normalized = [normalize(word) for word in cleaned.split()]
         meaningful = [word for word in cleaned_normalized if word not in exclude_words and len(word) > 3]
         all_words.extend(meaningful)
 
+    # Get the top N most common words
     word_freq = Counter(all_words)
     common_words = word_freq.most_common(top_n)
     summary = ", ".join([word for word, freq in common_words])
@@ -56,6 +70,7 @@ def analyze_reviews(review_list):
     """
     Analyze sentiment and return results with a summary.
     """
+    # Polarity and subjectivity for each review
     results = []
     for review in review_list:
         sentiment = analyze_sentiment(review)
@@ -64,7 +79,7 @@ def analyze_reviews(review_list):
             "polarity": sentiment["polarity"],
             "subjectivity": sentiment["subjectivity"]
         })
-
+    # Summary of all reviews
     summary = summarize_reviews(review_list)
     return {
         "sentiments": results,
