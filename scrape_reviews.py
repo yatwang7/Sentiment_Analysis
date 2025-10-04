@@ -33,17 +33,20 @@ def get_reddit_reviews(name, school, limit_per_subreddit=20):
             subreddit = reddit.subreddit(sub)
             for query in queries:
                 for submission in subreddit.search(query, limit=limit_per_subreddit, sort='relevance'):
+                    # combines the post title and text and appends
                     text = submission.title
                     if submission.selftext:
                         text += "\n" + submission.selftext
                     reviews.append(text)
 
+                    # collects all the comments and appends
                     submission.comments.replace_more(limit=0)
                     for comment in submission.comments.list():
                         reviews.append(comment.body)
 
-        # Filter and clean reviews
+        # ensures every r in reviews contains the last name (case insensitive)
         filtered_reviews = [r for r in reviews if last_name.lower() in r.lower()]
+        # trims extra space, removes duplicates, and deletes small reviews
         clean_reviews = list({r.strip() for r in filtered_reviews if len(r.strip()) > 10})
         print(f"[Reddit] Total cleaned reviews: {len(clean_reviews)}")
 
@@ -74,7 +77,7 @@ def save_reviews_to_json(name, school, reviews, output_dir="data"):
 
 # ----------- Main -----------
 if __name__ == "__main__":
-    professor_name = "David Sorenson"
+    professor_name = "David Menendez"
     professor_school = "Rutgers University"
 
     reviews = get_reddit_reviews(professor_name, professor_school, limit_per_subreddit=10)
