@@ -1,4 +1,5 @@
 flask
+nltk
 textblob
 requests
 beautifulsoup4
