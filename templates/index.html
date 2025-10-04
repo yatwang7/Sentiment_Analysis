@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Professor Sentiment Analysis</title>
+    <style>
+        body { font-family: sans-serif; margin: 40px; }
+        #results { margin-top: 30px; }
+        .review { border-bottom: 1px solid #ccc; padding: 10px 0; }
+        .positive { color: green; }
+        .negative { color: red; }
+    </style>
+</head>
+<body>
+    <h1>Professor Sentiment Analysis (Reddit)</h1>
+    <p>Enter a professor's name to see what Reddit thinks.</p>
+
+    <input type="text" id="profName" placeholder="e.g., David Menendez">
+    <button id="analyzeBtn">Analyze</button>
+
+    <div id="loading" style="display:none;">Analyzing... please wait.</div>
+    <div id="results"></div>
+
+    <script>
+        document.getElementById('analyzeBtn').addEventListener('click', async () => {
+            const profName = document.getElementById('profName').value.trim();
+            if (!profName) return alert("Please enter a professor name.");
+
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('results').innerHTML = '';
+
+            const response = await fetch('/analyze', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ prof_name: profName })
+            });
+
+            document.getElementById('loading').style.display = 'none';
+
+            if (!response.ok) {
+                const error = await response.json();
+                document.getElementById('results').innerHTML = `<p style="color:red;">Error: ${error.error}</p>`;
+                return;
+            }
+
+            const data = await response.json();
+
+            // Display summary
+            let html = `<h2>Summary for "${profName}"</h2>`;
+            html += `<p><b>Common Themes:</b> ${data.summary}</p>`;
+
+            // Display individual reviews
+            html += "<h3>Sample Reviews:</h3>";
+            data.sentiments.slice(0, 5).forEach(r => {
+                const sentimentClass = r.polarity > 0.1 ? 'positive' : (r.polarity < -0.1 ? 'negative' : '');
+                html += `<div class="review ${sentimentClass}">
+                            <p>${r.review}</p>
+                            <p>Polarity: ${r.polarity.toFixed(2)}, Subjectivity: ${r.subjectivity.toFixed(2)}</p>
+                         </div>`;
+            });
+
+            document.getElementById('results').innerHTML = html;
+        });
+    </script>
+</body>
+</html>
