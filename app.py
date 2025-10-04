@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, jsonify
-from scrape_reviews import scrape_professor_mentions, get_review_texts
+from scrape_reviews import get_reddit_reviews
 from sentiment_analysis import analyze_reviews
 
 app = Flask(__name__)
@@ -18,8 +18,8 @@ def analyze():
 
     # Scrape Reddit posts
     print("Scraping Reddit for professor:", prof_name)
-    posts = scrape_professor_mentions(prof_name)
-    review_texts = get_review_texts(posts)
+    cleaned_reviews = get_reddit_reviews(prof_name, "Rutgers University", limit_per_subreddit=20)
+    review_texts = cleaned_reviews.get('reviews', [])
 
     if not review_texts:
         return jsonify({"error": f"No Reddit posts found for {prof_name}"}), 404
