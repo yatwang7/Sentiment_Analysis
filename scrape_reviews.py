@@ -18,14 +18,14 @@ reddit = praw.Reddit(
 
 def get_reddit_reviews(name, school, limit_per_subreddit=20):
     reviews = []
+    first_name = name.split()[0]
     last_name = name.split()[-1]
-    subreddits = ["Rutgers"]
+    subreddits = ["Rutgers"]    # subreddits that will be searched
 
+    # these are the exact phrases we will search for
     queries = [
-        f"{last_name}",
-        f"{last_name} {school.split()[0]}",
-        f"Professor {last_name}",
-        f"Dr {last_name}"
+        f"{last_name}",  # Menendez
+        f"{first_name} {last_name}"    # David Menendez
     ]
 
     try:
