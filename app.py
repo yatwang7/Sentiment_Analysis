@@ -25,6 +25,9 @@ def analyze():
 
     # Run sentiment analysis
     results = analyze_reviews(review_texts, prof_name)
+
+    # Only keep the most polarizing reviews
+    
     return jsonify(results)
 
 if __name__ == "__main__":

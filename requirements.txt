@@ -1,5 +1,6 @@
 flask
+transformers
+torch
 nltk
-textblob
 dotenv
 praw
