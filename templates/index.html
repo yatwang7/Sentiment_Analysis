@@ -49,10 +49,13 @@
             let html = `<h2>Summary for "${profName}"</h2>`;
             html += `<p><b>Common Themes:</b> ${data.summary}</p>`;
 
+            // Display average polarity
+            html += `<p><b>Average Polarity:</b> ${data.average_polarity.toFixed(2)}</p>`;
+
             // Display individual reviews
             html += "<h3>Sample Reviews:</h3>";
-            data.sentiments.slice(0, 5).forEach(r => {
-                const sentimentClass = r.polarity > 0.1 ? 'positive' : (r.polarity < -0.1 ? 'negative' : '');
+            data.sentiments.forEach(r => {
+                const sentimentClass = r.polarity > 0.3 ? 'positive' : (r.polarity < -0.3 ? 'negative' : '');
                 html += `<div class="review ${sentimentClass}">
                             <p>${r.review}</p>
                             <p>Polarity: ${r.polarity.toFixed(2)}, Subjectivity: ${r.subjectivity.toFixed(2)}</p>

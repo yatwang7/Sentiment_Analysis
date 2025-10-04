@@ -84,20 +84,21 @@ def summarize_reviews(review_list, prof_name, top_n=5):
     """
     # Identify and exclude common stop words and review-specific terms
     stop_words = {
-        "a", "an", "the", "is", "are", "was", "were", "be", "to", "of", "and",
-        "in", "for", "with", "on", "this", "that", "i", "it", "but", "they",
-        "she", "he", "we", "you", "about", "very", "have", "has", "had", "my",
-        "so", "at", "his", "her", "their", "our", "as", "not", "from", "or"
+        "a", "an", "the", "is", "are", "was", "were", "be", "to", "of", "and", "in",
+        "for", "with", "on", "this", "that", "i", "it", "but", "they", "she", "he",
+        "we", "you", "about", "very", "have", "has", "had", "my", "so", "at", "his",
+        "her", "their", "our", "as", "not", "from", "or", "like", "will", "just", "your"
+        "if", "all", "what", "when", "which", "who", "there", "out", "up", "more",
+        "no", "one", "would", "been", "some", "could", "did", "how", "than", "then",
+        "take", "class", "course", "professor", "prof", "dr", "doctor", prof_name.lower()
     }
-    common_review_words = {prof_name, "professor", "course", "class", "lecture", "assignment", "exam", "student", "students"}
-    exclude_words = stop_words | common_review_words
 
     # Analyze each review and collect meaningful words
     all_words = []
     for review in review_list:
         cleaned = clean_text(review)
         cleaned_normalized = [normalize(word) for word in cleaned.split()]
-        meaningful = [word for word in cleaned_normalized if word not in exclude_words and len(word) > 3]
+        meaningful = [word for word in cleaned_normalized if word not in stop_words and len(word) > 3]
         all_words.extend(meaningful)
 
     # Get the top N most common words
@@ -123,8 +124,19 @@ def analyze_reviews(review_list, prof_name):
         })
     # Summary of all reviews
     summary = summarize_reviews(review_list, prof_name)
+
+    # Average polairity taking into account subjectivity
+    if results:
+        weights = [max(0.0, 1.0 - r["subjectivity"]) for r in results]  # trust objective reviews more
+        weighted_sum = sum(r["polarity"] * w for r, w in zip(results, weights))
+        total_weight = sum(weights) if sum(weights) > 0 else 1
+        average_polarity = weighted_sum / total_weight
+    else:
+        average_polarity = 0.0
+
     return {
         "sentiments": results,
+        "average_polarity": average_polarity,
         "summary": summary
     }
 
