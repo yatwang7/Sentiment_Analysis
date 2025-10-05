@@ -207,8 +207,8 @@ def analyze_reviews(review_list, prof_name, top_k_polarizing):
     results = select_most_polarizing(
         results,
         top_k=top_k_polarizing * 2,
-        min_abs_polarity=0.25,
-        min_subjectivity=0.15
+        min_abs_polarity=0.2,
+        min_subjectivity=0.1
     )
     average_polarity = average_polarity_from(results, scheme="objective")
 
@@ -216,8 +216,8 @@ def analyze_reviews(review_list, prof_name, top_k_polarizing):
     results = select_most_polarizing(
         results,
         top_k=top_k_polarizing,
-        min_abs_polarity=0.25,
-        min_subjectivity=0.15
+        min_abs_polarity=0.2,
+        min_subjectivity=0.1
     )
 
     return {

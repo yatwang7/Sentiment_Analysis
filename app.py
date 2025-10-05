@@ -33,7 +33,7 @@ def analyze():
         return jsonify({"error": f"No Reddit posts found for {prof_name}"}), 404
 
     # Run sentiment analysis
-    results = analyze_reviews(review_texts, prof_name, top_k_polarizing=5)
+    results = analyze_reviews(review_texts, prof_name, top_k_polarizing=10)
 
     # Save results to JSON
     output_file = f"data/{prof_name.replace(' ', '_')}_analysis.json"

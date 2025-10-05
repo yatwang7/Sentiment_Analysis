@@ -122,9 +122,9 @@ Transformers will download weights on first run to `~/.cache/huggingface`. First
 
 ```
 [Frontend index.html]
-      |  (POST /analyze: {prof_name})
+      |  (POST /analyze: {topic})
       v
-[Flask app.py] -----> get_reddit_reviews(prof_name, ...)
+[Flask app.py] -----> get_reddit_reviews(topic, ...)
       |                 (PRAW: gather titles, bodies, comments)
       |                 (optional: filter questions/noise)
       v
