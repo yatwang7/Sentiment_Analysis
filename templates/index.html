@@ -4,21 +4,38 @@
     <meta charset="UTF-8">
     <title>Professor Sentiment Analysis</title>
     <style>
-        body { font-family: sans-serif; margin: 40px; }
+        body { 
+            font-family: sans-serif; margin: 40px;
+            background-color: rgb(46, 46, 46); 
+        }
+
+        .containerSearch {
+            background-color: rgb(20, 20, 20);
+            color: rgb(235, 235, 235);
+            padding: 20px;
+            border-radius: 10px;
+            width: fit-content;
+            margin: 20px auto;
+            text-align: center;
+        }
+
         #results { margin-top: 30px; }
         .review { border-bottom: 1px solid #ccc; padding: 10px 0; }
         .positive { color: green; }
         .negative { color: red; }
+
     </style>
 </head>
 <body>
-    <h1>Professor Sentiment Analysis (Reddit)</h1>
-    <p>Enter a professor's name to see what Reddit thinks.</p>
+    <div class="containerSearch">
+        <h1>Professor Sentiment Analysis (Reddit)</h1>
+        <p>Enter a professor's name to see what Reddit thinks.</p>
 
-    <input type="text" id="profName" placeholder="e.g., David Menendez">
-    <button id="analyzeBtn">Analyze</button>
+        <input type="text" id="profName" placeholder="e.g., David Menendez">
+        <button id="analyzeBtn">Analyze</button>
+        <div id="loading" style="display:none;">Analyzing... please wait.</div>
+    </div>
 
-    <div id="loading" style="display:none;">Analyzing... please wait.</div>
     <div id="results"></div>
 
     <script>
@@ -62,7 +79,17 @@
                          </div>`;
             });
 
-            document.getElementById('results').innerHTML = html;
+            // specific styling for the results 
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.style.backgroundColor = 'rgb(20,20,20)';
+            resultsDiv.style.color = 'rgb(235,235,235)';
+            resultsDiv.style.padding = '20px';
+            resultsDiv.style.borderRadius = '10px';
+            resultsDiv.style.width = 'fit-content';
+            resultsDiv.style.margin = '20px auto';
+            resultsDiv.innerHTML = html;
+
+
         });
     </script>
 </body>
