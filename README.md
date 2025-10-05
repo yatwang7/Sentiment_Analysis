@@ -1,42 +1,51 @@
-# Sentiment Analysis
+# 💬 Reddit Sentiment Analyzer
 
-Analyze what Reddit says about a professor.
-Scrapes posts/comments (PRAW), filters out questions, runs transformer-based sentiment, summarizes common themes, and serves results via a Flask API + simple HTML frontend.
-
-This project can be generalized to broader topics across Reddit.
-
-## ✨ Features
-
-* 🔎 Reddit scraping via **PRAW** (configurable subreddits/query)
-* 🧠 Sentiment via **RoBERTa** (`cardiffnlp/twitter-roberta-base-sentiment-latest`)
-* 🧹 Basic question filtering (heuristics)
-* 🧮 Weighted average polarity (less weight for neutral/subjective texts)
-* 🧩 “Most polarizing” review selection (optional)
-* 🌐 Minimal **Flask** API + HTML/JS frontend
+This project scrapes Reddit discussions about any **topic, person, product, or event** (at Rutgers) and performs **sentiment analysis** on the collected posts and comments.  
+It summarizes what people are saying, identifies common themes, and calculates overall sentiment polarity scores — giving you a quick read on Reddit’s opinion landscape.
 
 ---
 
-## 🗂️ Project Structure
+## 🚀 Features
+
+- 🔍 **Reddit scraping** via the official Reddit API using **PRAW**
+- 🧠 **Sentiment analysis** using TextBlob or transformer-based models (e.g., DistilBERT)
+- ❓ **Question filtering** — automatically removes posts that are mostly inquiries or off-topic
+- ⚖️ **Weighted average polarity** — computes a subjectivity-weighted sentiment score
+- 💾 **Caching system** — stores analyzed results to avoid redundant computations
+- 🖥️ **Interactive web interface (Flask + HTML/CSS/JS)** for entering topics and viewing analysis
+- 🌈 **Visual output** — displays common themes and color-coded sample posts
+
+---
+
+## 🧱 Project Structure
 
 ```
 
 .
-├── app.py                    # Flask server & /analyze endpoint
-├── scrape_reviews.py         # PRAW search/collect + (optional) relevance filters
-├── sentiment_analysis.py     # Transformer sentiment + summary + aggregation
+├── app.py                    # Flask backend serving API + frontend
+├── scrape_reviews.py         # Reddit scraper using PRAW
+├── sentiment_analysis.py     # Sentiment analysis logic
+├── requirements.txt          # Dependencies
 ├── templates/
-│   └── index.html            # Frontend (fetches /analyze; displays results)
-├── requirements.txt
-├── README.md
-└── LICENSE
+│ └── index.html              # Frontend UI
+├── data/
+│ └── <topic>_analysis.json   # Locally cached analysis file
+├── LICENSE
+└── README.md
 
 ```
 
 ---
 
-## 🚀 Quickstart
+## ⚙️ Setup & Installation
 
-### 1) Python env & deps
+### 1. Clone the repo
+```bash
+git clone https://github.com/yatwang7/Sentiment_Analysis.git
+cd reddit-sentiment-analyzer
+```
+
+### 2. Python env & deps
 
 ```bash
 python -m venv .venv
@@ -57,7 +66,7 @@ torch
 
 > On Apple Silicon/macOS, if `torch` fails, grab the platform-specific install command from pytorch.org.
 
-### 2) Reddit API credentials
+### 3. Reddit API credentials
 
 Create an app at [https://www.reddit.com/prefs/apps](https://www.reddit.com/prefs/apps) → **Create App** → type **script**.
 Copy `client_id`, `client_secret`, and set a `user_agent` (any descriptive string).
@@ -70,13 +79,13 @@ client_secret=YOUR_REDDIT_CLIENT_SECRET
 user_agent=professor-sentiment-app/0.1 by u/yourusername
 ```
 
-### 3) Run the app
+### 4. Run the app
 
 ```bash
 python app.py
 ```
 
-Open [http://127.0.0.1:5000](http://127.0.0.1:5000) and try a professor name.
+Open [http://127.0.0.1:5000](http://127.0.0.1:5000) and try a topic.
 
 ---
 
@@ -137,8 +146,6 @@ Transformers will download weights on first run to `~/.cache/huggingface`. First
 { "prof_name": "First Last" }
 ```
 
-*(Optionally extend to include `"dept_name"` and `"course_name"` in both frontend and backend.)*
-
 **Response (JSON):**
 
 ```json
@@ -158,6 +165,7 @@ Transformers will download weights on first run to `~/.cache/huggingface`. First
 * **Question filtering:** `is_question_like()` removes posts that are primarily asking for recommendations (“Should I take…?”).
 * **Weighted average polarity:** objective-leaning texts (high neutrality) get **lower** weight; see `average_polarity_from(..., scheme="objective")`.
 * **Most polarizing:** you can keep only the strongest opinions with `select_most_polarizing(...)` (optional; included in `sentiment_analysis.py` if you enabled it).
+* **Caching:** after obtaining an analysis, we save it to a cache so the next lookup of the same topic is faster.
 
 ---
 

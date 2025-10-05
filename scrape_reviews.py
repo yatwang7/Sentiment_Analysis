@@ -18,8 +18,8 @@ reddit = praw.Reddit(
 
 def get_reddit_reviews(name, school, limit_per_subreddit=20):
     reviews = []
-    first_name = name.split()[0]
-    last_name = name.split()[-1]
+    first_name = name.split()[0].lower()
+    last_name = name.split()[-1].lower()
     subreddits = ["Rutgers"]    # subreddits that will be searched
 
     # these are the exact phrases we will search for
