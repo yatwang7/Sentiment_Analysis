@@ -97,7 +97,7 @@ def summarize_reviews(review_list, prof_name, top_n=5):
         "there", "out", "up", "more", "no", "one", "would", "been", "some",
         "could", "did", "how", "than", "then", "take", "class", "course",
         "professor", "prof", "dr", "doctor", "also", "anyone", "semester",
-        "took",
+        "took", "your",
         prof_name.lower()
     }
 
@@ -149,7 +149,7 @@ def average_polarity_from(results, scheme="objective", eps=1e-9):
 
 # ----------- Filter Most Polarizing Reviews -----------
 
-def select_most_polarizing(sentiments, top_k=0,
+def select_most_polarizing(sentiments, top_k,
                            min_abs_polarity=0.25,
                            min_subjectivity=0.15):
     """
@@ -184,7 +184,7 @@ def select_most_polarizing(sentiments, top_k=0,
 
 # ----------- Main Review Analysis -----------
 
-def analyze_reviews(review_list, prof_name, top_k_polarizing=5):
+def analyze_reviews(review_list, prof_name, top_k_polarizing):
     """
     Analyze all reviews: filter questions, run sentiment,
     compute average polarity and summary, then keep only the most polarizing reviews.
@@ -206,20 +206,19 @@ def analyze_reviews(review_list, prof_name, top_k_polarizing=5):
     # Average polarity computed over all non-question results
     results = select_most_polarizing(
         results,
-        top_k=0,
+        top_k=top_k_polarizing * 2,
         min_abs_polarity=0.25,
         min_subjectivity=0.15
     )
     average_polarity = average_polarity_from(results, scheme="objective")
 
-    # --- NEW: keep only the most polarizing items
-    if top_k_polarizing is not None and top_k_polarizing > 0:
-        results = select_most_polarizing(
-            results,
-            top_k=top_k_polarizing,
-            min_abs_polarity=0.25,
-            min_subjectivity=0.15
-        )
+    # --- Keep only the most polarizing items
+    results = select_most_polarizing(
+        results,
+        top_k=top_k_polarizing,
+        min_abs_polarity=0.25,
+        min_subjectivity=0.15
+    )
 
     return {
         "sentiments": results,

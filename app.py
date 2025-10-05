@@ -24,9 +24,7 @@ def analyze():
         return jsonify({"error": f"No Reddit posts found for {prof_name}"}), 404
 
     # Run sentiment analysis
-    results = analyze_reviews(review_texts, prof_name)
-
-    # Only keep the most polarizing reviews
+    results = analyze_reviews(review_texts, prof_name, top_k_polarizing=5)
     
     return jsonify(results)
 
