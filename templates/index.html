@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Professor Sentiment Analysis</title>
+  <title>RU Sentiment Analysis</title>
   <style>
     :root {
       --bg-dark: #2e2e2e;
       --box-dark: #1a1a1a;
       --text-light: #f0f0f0;
-      --accent: #FF5700; /* soft blue accent */
+      --accent: #CC0033; /* rutgers red */
       --positive: #4caf50;
       --negative: #e53935;
     }
@@ -114,10 +114,10 @@
 </head>
 <body>
   <div class="containerSearch">
-    <h1>Professor Sentiment Analysis (Reddit)</h1>
-    <p>Enter a professor's name to see what Reddit thinks.</p>
+    <h1>r/Rutgers Sentiment Analysis</h1>
+    <p>Enter a topic to see what Reddit thinks.</p>
 
-    <input type="text" id="profName" placeholder="e.g., David Menendez">
+    <input type="text" id="profName" placeholder="e.g., &quot;David Menendez&quot; or &quot;REXB&quot;">
     <button id="analyzeBtn">Analyze</button>
     <div id="loading" style="display:none;">Analyzing... please wait.</div>
   </div>
