@@ -19,7 +19,15 @@
             text-align: center;
         }
 
-        #results { margin-top: 30px; }
+        #results { 
+            background-color: rgb(26, 26, 26);
+            color: rgb(235, 235, 235);
+            padding: 20px;
+            border-radius: 10px;
+            width: fit-content;
+            margin: 20px auto;
+            display: none;  /* hide initially */
+        }
         .review { border-bottom: 1px solid #ccc; padding: 10px 0; }
         .positive { color: green; }
         .negative { color: red; }
@@ -84,14 +92,8 @@
 
             // specific styling for the results 
             const resultsDiv = document.getElementById('results');
-            resultsDiv.style.backgroundColor = 'rgb(20,20,20)';
-            resultsDiv.style.color = 'rgb(235,235,235)';
-            resultsDiv.style.padding = '20px';
-            resultsDiv.style.borderRadius = '10px';
-            resultsDiv.style.width = 'fit-content';
-            resultsDiv.style.margin = '20px auto';
+            resultsDiv.style.display = 'block';
             resultsDiv.innerHTML = html;
-
 
         });
     </script>
