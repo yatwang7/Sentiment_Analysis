@@ -1,144 +1,178 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Professor Sentiment Analysis</title>
-    <style>
-        :root {
-            --bg-dark: #2e2e2e;
-            --box-dark: #1a1a1a;
-            --text-light: #f0f0f0;
-            --accent: #FF5700; 
-            --positive: #4caf50;
-            --negative: #e53935;
-        }
+  <meta charset="UTF-8">
+  <title>Professor Sentiment Analysis</title>
+  <style>
+    :root {
+      --bg-dark: #2e2e2e;
+      --box-dark: #1a1a1a;
+      --text-light: #f0f0f0;
+      --accent: #FF5700; /* soft blue accent */
+      --positive: #4caf50;
+      --negative: #e53935;
+    }
 
-        h1 {
-            color: var(--accent);
-            font-weight: bold;
-        }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-light);
+      margin: 0;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
 
-        p {
-            font-family: 'SegoeUI', sans-serif;
-            margin-bottom: 25px;
-        }
+    h1 {
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
 
-        body { 
-            font-family: 'SegoeUI', sans-serif; margin: 40px;
-            background-color: rgb(46, 46, 46); 
-            color: var(--text-light);
-        }
+    p {
+      margin-top: 0;
+      margin-bottom: 20px;
+    }
 
-        input[type="text"] {
-            padding: 10px 14px;
-            border: none;
-            border-radius: 6px;
-            background-color: rgb(49, 49, 49);
-            outline: none;
-            color: var(--text-light);
-        }
+    .containerSearch {
+      background-color: var(--box-dark);
+      padding: 25px 40px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+      text-align: center;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
 
-        input::placeholder {
-            color: #aaa;
-        }
+    .containerSearch:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 14px rgba(0,0,0,0.6);
+    }
 
-        button {
-            padding: 10px 14px;
-            border: none;
-            border-radius: 6px;
-            background-color: var(--accent);
-            color: white;
-            font-weight: bold;
-            outline: none;
-        }
+    input[type="text"] {
+      padding: 10px 14px;
+      border: none;
+      border-radius: 6px;
+      width: 250px;
+      outline: none;
+      background-color: #333;
+      color: white;
+    }
 
-        .containerSearch {
-            background-color: rgb(20, 20, 20);
-            color: rgb(235, 235, 235);
-            padding: 30px 40px;
-            border-radius: 10px;
-            width: fit-content;
-            margin: 20px auto;
-            text-align: center;
-        }
+    input::placeholder {
+      color: #aaa;
+    }
 
-        #results { 
-            background-color: rgb(26, 26, 26);
-            color: rgb(235, 235, 235);
-            padding: 20px;
-            border-radius: 10px;
-            width: fit-content;
-            margin: 20px auto;
-            display: none;  /* hide initially */
-        }
-        .review { border-bottom: 1px solid #ccc; padding: 10px 0; }
-        .positive { color: green; }
-        .negative { color: red; }
+    button {
+      padding: 10px 16px;
+      margin-left: 8px;
+      border: none;
+      border-radius: 6px;
+      background-color: var(--accent);
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
 
-    </style>
+    button:hover {
+      background-color: #64c0ff;
+    }
+
+    #loading {
+      margin-top: 15px;
+      color: #bbb;
+      font-style: italic;
+    }
+
+    #results {
+      background-color: var(--box-dark);
+      padding: 25px 35px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+      width: 80%;
+      max-width: 700px;
+      margin-top: 30px;
+      display: none;
+    }
+
+    .review {
+      border-bottom: 1px solid #444;
+      padding: 10px 0;
+    }
+
+    .review:last-child {
+      border-bottom: none;
+    }
+
+    .positive { color: var(--positive); }
+    .negative { color: var(--negative); }
+
+    h2, h3 {
+      color: var(--accent);
+    }
+  </style>
 </head>
 <body>
-    <div class="containerSearch">
-        <h1>Professor Sentiment Analysis (Reddit)</h1>
-        <p>Enter a professor's name to see what Reddit thinks.</p>
+  <div class="containerSearch">
+    <h1>Professor Sentiment Analysis (Reddit)</h1>
+    <p>Enter a professor's name to see what Reddit thinks.</p>
 
-        <input type="text" id="profName" placeholder="e.g., David Menendez">
-        <button id="analyzeBtn">Analyze</button>
-        <div id="loading" style="display:none;">Analyzing... please wait.</div>
-    </div>
+    <input type="text" id="profName" placeholder="e.g., David Menendez">
+    <button id="analyzeBtn">Analyze</button>
+    <div id="loading" style="display:none;">Analyzing... please wait.</div>
+  </div>
 
-    <div id="results"></div>
+  <div id="results"></div>
 
-    <script>
-        const toFive = p => Math.max(-5, Math.min(5, p * 5));
+  <script>
+    const toFive = p => Math.max(-5, Math.min(5, p * 5));
 
-        document.getElementById('analyzeBtn').addEventListener('click', async () => {
-            const profName = document.getElementById('profName').value.trim();
-            if (!profName) return alert("Please enter a professor name.");
+    document.getElementById('analyzeBtn').addEventListener('click', async () => {
+      const profName = document.getElementById('profName').value.trim();
+      if (!profName) return alert("Please enter a professor name.");
 
-            document.getElementById('loading').style.display = 'block';
-            document.getElementById('results').innerHTML = '';
+      const loading = document.getElementById('loading');
+      const results = document.getElementById('results');
+      loading.style.display = 'block';
+      results.style.display = 'none';
+      results.innerHTML = '';
 
-            const response = await fetch('/analyze', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ prof_name: profName })
-            });
+      const response = await fetch('/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prof_name: profName })
+      });
 
-            document.getElementById('loading').style.display = 'none';
+      loading.style.display = 'none';
 
-            if (!response.ok) {
-                const error = await response.json();
-                document.getElementById('results').innerHTML = `<p style="color:red;">Error: ${error.error}</p>`;
-                return;
-            }
+      if (!response.ok) {
+        const error = await response.json();
+        results.innerHTML = `<p style="color:red;">Error: ${error.error}</p>`;
+        results.style.display = 'block';
+        return;
+      }
 
-            const data = await response.json();
+      const data = await response.json();
 
-            // Display summary
-            let html = `<h2>Summary for "${profName}"</h2>`;
-            html += `<p><b>Common Themes:</b> ${data.summary}</p>`; // Uncomment if summary is desired
+      // Build results HTML
+      let html = `<h2>Summary for "${profName}"</h2>`;
+      html += `<p><b>Common Themes:</b> ${data.summary}</p>`;
+      html += `<p><b>Average Polarity:</b> ${toFive(data.average_polarity).toFixed(2)}</p>`;
+      html += "<h3>Top Reviews:</h3>";
 
-            // Display average polarity
-            html += `<p><b>Average Polarity:</b> ${toFive(data.average_polarity).toFixed(2)}</p>`;
+      data.sentiments.forEach(r => {
+        const sentimentClass = r.polarity > 0.3 ? 'positive' : (r.polarity < -0.3 ? 'negative' : '');
+        const pol5 = toFive(r.polarity);
+        html += `
+          <div class="review ${sentimentClass}">
+            <p>${r.review}</p>
+            <p>Polarity: ${pol5.toFixed(2)}, Subjectivity: ${r.subjectivity.toFixed(2)}</p>
+          </div>`;
+      });
 
-            // Display individual reviews
-            html += "<h3>Top Reviews:</h3>";
-            data.sentiments.forEach(r => {
-                const sentimentClass = r.polarity > 0.3 ? 'positive' : (r.polarity < -0.3 ? 'negative' : '');
-                const pol5 = toFive(r.polarity);
-                html += `<div class="review ${sentimentClass}">
-                            <p>${r.review}</p>
-                            <p>Polarity: ${pol5.toFixed(2)}, Subjectivity: ${r.subjectivity.toFixed(2)}</p>
-                         </div>`;
-            });
-
-            // specific styling for the results 
-            const resultsDiv = document.getElementById('results');
-            resultsDiv.style.display = 'block';
-            resultsDiv.innerHTML = html;
-
-        });
-    </script>
+      results.innerHTML = html;
+      results.style.display = 'block';
+    });
+  </script>
 </body>
 </html>
