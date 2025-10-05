@@ -39,6 +39,8 @@
     <div id="results"></div>
 
     <script>
+        const toFive = p => Math.max(-5, Math.min(5, p * 5));
+
         document.getElementById('analyzeBtn').addEventListener('click', async () => {
             const profName = document.getElementById('profName').value.trim();
             if (!profName) return alert("Please enter a professor name.");
@@ -67,15 +69,16 @@
             html += `<p><b>Common Themes:</b> ${data.summary}</p>`; // Uncomment if summary is desired
 
             // Display average polarity
-            html += `<p><b>Average Polarity:</b> ${data.average_polarity.toFixed(2)}</p>`;
+            html += `<p><b>Average Polarity:</b> ${toFive(data.average_polarity).toFixed(2)}</p>`;
 
             // Display individual reviews
             html += "<h3>Top Reviews:</h3>";
             data.sentiments.forEach(r => {
                 const sentimentClass = r.polarity > 0.3 ? 'positive' : (r.polarity < -0.3 ? 'negative' : '');
+                const pol5 = toFive(r.polarity);
                 html += `<div class="review ${sentimentClass}">
                             <p>${r.review}</p>
-                            <p>Polarity: ${r.polarity.toFixed(2)}, Subjectivity: ${r.subjectivity.toFixed(2)}</p>
+                            <p>Polarity: ${pol5.toFixed(2)}, Subjectivity: ${r.subjectivity.toFixed(2)}</p>
                          </div>`;
             });
 
