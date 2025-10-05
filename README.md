@@ -166,6 +166,7 @@ Transformers will download weights on first run to `~/.cache/huggingface`. First
 * **Weighted average polarity:** objective-leaning texts (high neutrality) get **lower** weight; see `average_polarity_from(..., scheme="objective")`.
 * **Most polarizing:** you can keep only the strongest opinions with `select_most_polarizing(...)` (optional; included in `sentiment_analysis.py` if you enabled it).
 * **Caching:** after obtaining an analysis, we save it to a cache so the next lookup of the same topic is faster.
+* **JSON export:** `save_reviews_to_json()` can be used to export scraped reviews.
 
 ---
 
@@ -195,10 +196,9 @@ Transformers will download weights on first run to `~/.cache/huggingface`. First
 
 ## 🧱 Roadmap (nice-to-haves)
 
-* Add **dept/course inputs** to the UI; include them in search queries.
+* Add more search filters to the UI; include them in search queries.
 * Add **semantic relevance** (Sentence-BERT) to avoid name collisions.
 * Visualize distribution with **Chart.js** (positive/neutral/negative bars).
-* Cache per-query results to reduce API calls.
 * Export CSV/JSON from the UI.
 
 ---
